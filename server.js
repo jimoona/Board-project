@@ -52,7 +52,16 @@ app.post('/add', async(요청, 응답) => {
   })
 
 app.get('/detail/:id', async(요청, 응답) => { 
-  let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id)}) //DB에서 특정 데이터만 가져오기
-  console.log(요청.params) //유저가 url 파라미터 자리에 입력한 값
-  응답.render('detail.ejs', {게시글 : result})
+  try {
+    let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id)}) //DB에서 특정 데이터만 가져오기
+    console.log(result) //유저가 url 파라미터 자리에 입력한 값
+    if (result == null) {
+      응답.status(400).send('이상한 url 입력함')
+    } else {
+      응답.render('detail.ejs', {게시글 : result})
+    }
+  } catch(e) {
+    console.log(e)
+    응답.status(400).send('이상한 url 입력함')
+  }
 })  
