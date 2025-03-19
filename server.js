@@ -37,7 +37,16 @@ app.get('/write', (요청, 응답) => {
 })
 app.post('/add', async(요청, 응답) => {
     console.log(요청.body) //유저가 보낸 데이터 출력 가능, {title: '글제목', content: '글내용'} 형태의 데이터
-    await db.collection('post').insertOne({title : 요청.body.title, content : 요청.body.content})
+    try {
+      if(요청.body.title == '' || 요청.body.content == '') { //예외_빈칸인 채로 전송될 경우
+        응답.send('내용을 입력하세요.')
+      } else {
+      await db.collection('post').insertOne({title : 요청.body.title, content : 요청.body.content})
     //몽고디비의 post 컬렉션에 title과 content라는 키로 데이터를 저장
     응답.redirect('/list') //서버실행 후 유저를 다른 페이지로 이동시킴
-})
+      } 
+    } catch(e) {
+      console.log(e) //에러메시지 출력
+      응답.status(500).send('서버 에러') //프론트에게 에러코드 전송
+    }
+  })
