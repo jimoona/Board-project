@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet"> 
+</head>
+<body class="grey-bg">
+    <%- include('navbar.ejs') %>
+    <form class="form-box" action="/add" method="POST">
+        <!--서버에 요청하는 URL과 메서드-->
+        <h4>글쓰기</h4>
+        <input name="title"> <!--"title": 데이터를 서버로 보낼 때 사용할 키 지정-->
+        <input name="content">
+        <button type="submit">전송</button> 
+        <!--전송 버튼-->
+    </form> 
+<!-- 웹페이지에서 이용자가 작성할 수 있는 인풋 만들기: <form>안에 <input>
+    input의 type속성에 따라 다양한 인풋 가능 -->
+</body>
+</html>

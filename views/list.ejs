@@ -7,19 +7,14 @@
     <link href="/main.css" rel="stylesheet"> 
 </head>
 <body class="grey-bg">
-
+    <%- include('navbar.ejs') %>
     <div class="white-bg">
-        <div class="list-box">
-            <h4>글제목임</h4>
-            <p>글내용임</p>
-          </div>
-          <div class="list-box">
-            <h4>글제목임</h4>
-            <p>글내용임</p>
-        </div>
-    </div> 
-      
-    
-    
+        <% for (let i = 0; i < 글목록.length; i++){  %> <!--html 사이에 js문법 쓸 때-->
+            <div class="list-box">
+                <h4><%= 글목록[i].title %></h4> <!--받은 데이터를 ejs파일 안에 꽂아넣기-->
+                <p><%= 글목록[i].content %></p>
+            </div>
+        <% } %>
+    </div>
 </body>
 </html>
