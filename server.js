@@ -8,7 +8,7 @@ app.set('view engine', 'ejs') //템플릿엔진 사용(DB의 데이터를 ejs파
 app.use(express.json()) //요청.body를 쓰기 위한 세팅
 app.use(express.urlencoded({extended:true})) //요청.body
 
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 
 let db
 const url = process.env.MONGO_URL; // 환경변수에서 DB URL 가져옴
@@ -28,7 +28,7 @@ app.get('/', (요청, 응답) => {
      응답.send('Hello, world!')
 })
 app.get('/list', async(요청, 응답) => {
-    let result = await db.collection('post').find().toArray() //DB에서 데이터 가져오기
+    let result = await db.collection('post').find().toArray() //DB에서 '모든' 데이터 가져오기
     console.log(result)
     응답.render('list.ejs', {글목록 : result}) //서버 데이터를 ejs 파일로 전송, 데이터의 이름은 글목록
 })
@@ -50,3 +50,9 @@ app.post('/add', async(요청, 응답) => {
       응답.status(500).send('서버 에러') //프론트에게 에러코드 전송
     }
   })
+
+app.get('/detail/:id', async(요청, 응답) => { 
+  let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id)}) //DB에서 특정 데이터만 가져오기
+  console.log(요청.params) //유저가 url 파라미터 자리에 입력한 값
+  응답.render('detail.ejs', {게시글 : result})
+})  
