@@ -29,7 +29,6 @@ app.get('/', (요청, 응답) => {
 })
 app.get('/list', async(요청, 응답) => {
     let result = await db.collection('post').find().toArray() //DB에서 '모든' 데이터 가져오기
-    console.log(result)
     응답.render('list.ejs', {글목록 : result}) //서버 데이터를 ejs 파일로 전송, 데이터의 이름은 글목록
 })
 app.get('/write', (요청, 응답) => {
@@ -65,3 +64,18 @@ app.get('/detail/:id', async(요청, 응답) => {
     응답.status(400).send('이상한 url 입력함')
   }
 })  
+
+app.get('/edit/:id', async(요청, 응답) => { //URL 파라미터 사용(:을 붙여야)
+  let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id)})
+  console.log(result)
+  응답.render('edit.ejs', {수정할글 : result})
+}) 
+//1.수정버튼 누르면 수정 페이지로 이동 (2.기존 글 채워져 있음)
+
+app.post('/edit', async(요청, 응답) => { 
+  await db.collection('post').updateOne({_id : new ObjectId(요청.body.id)}, {$set : {title : 요청.body.title, content : 요청.body.content}}) 
+  //DB의 document 수정 코드
+  console.log(요청.body)
+  응답.redirect('/list') //수정 후 list페이지로 이동
+})
+//3. 전송 누르면 입력한 내용으로 DB 글 수정(서버에 전송 후 서버에서 확인하고 DB 수정)
