@@ -2,13 +2,15 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
+const { MongoClient, ObjectId } = require('mongodb')
+const methodOverride = require('method-override')
 
+app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public')); //public폴더의 static파일들 사용
 app.set('view engine', 'ejs') //템플릿엔진 사용(DB의 데이터를 ejs파일에 꽂아넣기)
 app.use(express.json()) //요청.body를 쓰기 위한 세팅
 app.use(express.urlencoded({extended:true})) //요청.body
 
-const { MongoClient, ObjectId } = require('mongodb')
 
 let db
 const url = process.env.MONGO_URL; // 환경변수에서 DB URL 가져옴
@@ -72,7 +74,7 @@ app.get('/edit/:id', async(요청, 응답) => { //URL 파라미터 사용(:을 �
 }) 
 //1.수정버튼 누르면 수정 페이지로 이동 (2.기존 글 채워져 있음)
 
-app.post('/edit', async(요청, 응답) => { 
+app.put('/edit', async(요청, 응답) => { 
   await db.collection('post').updateOne({_id : new ObjectId(요청.body.id)}, {$set : {title : 요청.body.title, content : 요청.body.content}}) 
   //DB의 document 수정 코드
   console.log(요청.body)
