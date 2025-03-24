@@ -81,3 +81,9 @@ app.put('/edit', async(요청, 응답) => {
   응답.redirect('/list') //수정 후 list페이지로 이동
 })
 //3. 전송 누르면 입력한 내용으로 DB 글 수정(서버에 전송 후 서버에서 확인하고 DB 수정)
+
+app.delete('/delete', async(요청, 응답) => {
+  console.log(요청.query) //Query string으로 전송한 데이터 출력할 때
+  await db.collection('post').deleteOne({_id : new ObjectId(요청.query.docid)}) //DB의 데이터 삭제 기능
+  응답.send('삭제완료') //새로고침 아니므로 다른 페이지로 안내X
+})
