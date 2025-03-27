@@ -11,6 +11,17 @@ app.set('view engine', 'ejs') //템플릿엔진 사용(DB의 데이터를 ejs파
 app.use(express.json()) //요청.body를 쓰기 위한 세팅
 app.use(express.urlencoded({extended:true})) //요청.body
 
+const session = require('express-session')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+
+app.use(passport.initialize())
+app.use(session({
+  secret: 'hjy9794',
+  resave : false,
+  saveUninitialized : false
+}))
+app.use(passport.session()) 
 
 let db
 const url = process.env.MONGO_URL; // 환경변수에서 DB URL 가져옴
@@ -93,3 +104,32 @@ app.get('/list/:id', async(요청, 응답) => {
   let result = await db.collection('post').find().skip((요청.params.id - 1) * 5).limit(5).toArray() //너무 많은 skip은 금지시키기
   응답.render('list.ejs', {글목록 : result})
 })
+
+passport.use(new LocalStrategy(async (입력한아이디, 입력한비번, cb) => {
+  let result = await db.collection('user').findOne({ username : 입력한아이디})
+  if (!result) {
+    return cb(null, false, { message: '아이디 DB에 없음' })
+  }
+  if (result.password == 입력한비번) {
+    return cb(null, result)
+  } else {
+    return cb(null, false, { message: '비번불일치' });
+  }
+})) //user가 제출한 아이디/비번이 DB와 일치하는지 검사하는 전략 등록(실행X)
+
+app.get('/login', async(요청, 응답) => {
+  응답.render('login.ejs')
+})
+
+app.post('/login', async(요청, 응답, next) => {
+
+  passport.authenticate('local', (error, user, info) => {
+    if (error) return 응답.status(500).json(error)
+    if (!user) return 응답.status(401).json(info.message)
+    요청.login(user, (err) => {
+      if (err) return next(err)
+      응답.redirect('/')
+    })
+  })(요청, 응답, next)
+
+}) //아이디/비번을 DB와 비교하는 코드 '실행'
