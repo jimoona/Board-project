@@ -87,3 +87,9 @@ app.delete('/delete', async(요청, 응답) => {
   await db.collection('post').deleteOne({_id : new ObjectId(요청.query.docid)}) //DB의 데이터 삭제 기능
   응답.send('삭제완료') //새로고침 아니므로 다른 페이지로 안내X
 })
+
+app.get('/list/:id', async(요청, 응답) => {
+  //?번~?번 글을 찾아서 result 변수에 저장
+  let result = await db.collection('post').find().skip((요청.params.id - 1) * 5).limit(5).toArray() //너무 많은 skip은 금지시키기
+  응답.render('list.ejs', {글목록 : result})
+})
